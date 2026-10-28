@@ -1,0 +1,17 @@
+tmp/
+data/
+.env
+.env.*
+!.env.example
+.DS_Store
+bin/
+coverage.out
+data-bootstrap-credentials.csv
+.chart-data-*/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+__pycache__/
+*.pyc
+*.pem
+*.key

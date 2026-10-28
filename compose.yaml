@@ -1,0 +1,26 @@
+services:
+  training:
+    build:
+      context: .
+      target: ${RUNTIME_TARGET:-runtime-core}
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:8080:8080"
+    environment:
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:?Set a strong initial admin password in .env}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      DATA_DIR: /data
+      AI_BASE_URL: ${AI_BASE_URL:-}
+      AI_MODEL: ${AI_MODEL:-}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MAX_CALLS: ${AI_MAX_CALLS:-100}
+    volumes:
+      - classroom-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/server", "--healthcheck"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+volumes:
+  classroom-data:

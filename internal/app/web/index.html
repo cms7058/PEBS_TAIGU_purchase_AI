@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>航材采购 AI 实训中心</title>
+    <link rel="stylesheet" href="/style.css?v=20261028-6" />
+    <script src="/app.js?v=20261028-6" defer></script>
+    <script src="/features.js?v=20261028-6" defer></script>
+    <script src="/learner-ui.js?v=20261028-6" defer></script>
+    <script src="/assistant.js?v=20261028-6" defer></script>
+    <script src="/learners.js?v=20261028-6" defer></script>
+    <script src="/enterprise-ui.js?v=20261028-6" defer></script>
+    <script src="/reply-privacy.js?v=20261028-6" defer></script>
+    <script src="/report-ui.js?v=20261028-6" defer></script>
+    <script src="/review-ui.js?v=20261028-6" defer></script>
+    <script src="/consultations-ui.js?v=20261028-6" defer></script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="brand">TAIGU <span>航材采购 AI 实训中心</span></div>
+      <div id="identity"></div>
+    </header>
+    <div id="portal-frame">
+      <aside id="business-sidebar" hidden aria-label="采购业务导航"></aside>
+      <div id="portal-content">
+        <main id="app">
+          <section class="portal-home">
+            <p class="eyebrow">TAIGU · 两天实战工作坊</p>
+            <h1>航材采购 AI 实训中心</h1>
+            <p class="muted">请选择您的身份，进入对应的工作空间。</p>
+            <div class="portal-grid">
+              <a class="portal-card learner-portal" href="/learner">
+                <span class="portal-symbol" aria-hidden="true">学</span>
+                <h2>学员入口</h2>
+                <p>查看已开放课件，完成引导式实训与结业考试。</p>
+                <strong>进入学员课堂 →</strong>
+              </a>
+              <a class="portal-card admin-portal" href="/admin">
+                <span class="portal-symbol" aria-hidden="true">教</span>
+                <h2>管理员入口</h2>
+                <p>控制授课进度、课件与实训权限，查看统计并管理考试。</p>
+                <strong>进入授课管理 →</strong>
+              </a>
+            </div>
+            <p class="portal-note">
+              学员请使用讲师分配的账号；管理员请使用管理账号。
+            </p>
+          </section>
+        </main>
+        <section id="workspace" hidden></section>
+      </div>
+    </div>
+    <button id="sidebar-backdrop" aria-label="关闭业务菜单" hidden></button>
+    <div id="ai-assistant" hidden></div>
+    <dialog id="audience-dialog" aria-labelledby="dialog-title">
+      <form id="audience-form">
+        <div class="dialog-head">
+          <h2 id="dialog-title"></h2>
+          <button
+            type="button"
+            data-action="cancel-dialog"
+            aria-label="取消并关闭"
+          >
+            ×
+          </button>
+        </div>
+        <p id="dialog-page" class="muted"></p>
+        <p id="dialog-description" class="notice"></p>
+        <div class="row">
+          <label
+            ><input type="radio" name="audience" value="online" />
+            所有在线学员</label
+          ><label
+            ><input type="radio" name="audience" value="custom" />
+            指定学员</label
+          >
+        </div>
+        <div class="row">
+          <button type="button" data-action="select-all">选择全班</button
+          ><button type="button" data-action="select-none">清空后单选</button
+          ><span id="selection-count" class="muted"></span>
+        </div>
+        <div id="learner-grid" class="learner-grid"></div>
+        <details id="module-details">
+          <summary>关联实训（可选）</summary>
+          <div id="module-grid" class="module-grid"></div>
+        </details>
+        <p id="change-summary" aria-live="polite"></p>
+        <p id="dialog-error" role="alert"></p>
+        <footer class="dialog-footer">
+          <button type="button" data-action="cancel-dialog">取消</button
+          ><button class="primary" id="confirm-audience" type="submit">
+            确认
+          </button>
+        </footer>
+      </form>
+    </dialog>
+    <dialog id="close-dialog" aria-labelledby="close-title">
+      <h2 id="close-title">关闭此页？</h2>
+      <p id="close-description"></p>
+      <p class="muted">
+        所有学员都将失去该页访问权限；若正在投影则进入等待画面。实训保持原状态。
+      </p>
+      <p id="close-error" role="alert"></p>
+      <footer class="dialog-footer">
+        <button data-action="cancel-close">取消</button
+        ><button class="danger" data-action="confirm-close">确认关闭</button>
+      </footer>
+    </dialog>
+    <dialog id="account-dialog" aria-label="学员账号管理"></dialog>
+    <dialog id="enterprise-dialog" aria-label="实训字段和数据采集"></dialog>
+    <div id="status" role="status" aria-live="polite"></div>
+  </body>
+</html>
