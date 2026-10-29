@@ -31,10 +31,7 @@ func (s *Server) changePassword(w http.ResponseWriter, r *http.Request, ss sessi
 	if !decode(w, r, &in) {
 		return
 	}
-	minLength := 16
-	if ss.Role == "learner" {
-		minLength = 6
-	}
+	minLength := 6
 	if utf8.RuneCountInString(in.Next) < minLength || utf8.RuneCountInString(in.Next) > 200 {
 		fail(w, 422, fmt.Sprintf("新密码应为%d–200字符", minLength))
 		return

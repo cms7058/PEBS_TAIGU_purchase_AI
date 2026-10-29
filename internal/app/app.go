@@ -22,6 +22,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode/utf8"
 )
 
 //go:embed web/*
@@ -79,12 +80,14 @@ type Action struct {
 	Revision   int      `json:"revision"`
 	Kind       string   `json:"kind"`
 	Page       string   `json:"page"`
+	Pages      []string `json:"pages,omitempty"`
 	Learners   []string `json:"learners"`
 	Modules    []string `json:"modules"`
 	OnlineOnly bool     `json:"onlineOnly"`
 }
 type session struct {
 	ID, Role          string
+	ProjectionControl bool
 	Expires, LastSeen time.Time
 }
 type attempt struct {
@@ -153,8 +156,8 @@ func New(cfg Config) (*Server, error) {
 	} else if !os.IsNotExist(err) {
 		return nil, err
 	} else {
-		if len(cfg.AdminPassword) < 16 {
-			return nil, errors.New("first start requires BOOTSTRAP_ADMIN_PASSWORD with at least 16 characters")
+		if n := utf8.RuneCountInString(cfg.AdminPassword); n < 6 || n > 200 {
+			return nil, errors.New("first start requires BOOTSTRAP_ADMIN_PASSWORD with 6–200 characters")
 		}
 		s.state = State{Revision: 1, Learners: []Learner{}, Closed: []string{}, Audit: []Event{}}
 		add := func(id, role, password string) {
@@ -330,19 +333,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		s.me(w, ss)
 		return
 	}
-	if r.URL.Path == "/api/projection" && r.Method == "GET" {
-		if ss.Role != "admin" && ss.Role != "projector" {
-			fail(w, 403, "仅限投影显示端")
-			return
-		}
-		var slide *Slide
-		for _, p := range s.state.Slides {
-			if p.ID == s.state.Projection {
-				v := p
-				slide = &v
-			}
-		}
-		respond(w, 200, map[string]any{"revision": s.state.Revision, "slide": slide})
+	if r.URL.Path == "/api/projection" {
+		s.projectionAPI(w, r, ss)
 		return
 	}
 
@@ -396,7 +388,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 		case r.URL.Path == "/api/admin/projection-token" && r.Method == "POST":
 			t := randomToken()
-			s.sessions[t] = session{ID: "projection", Role: "projector", Expires: now.Add(8 * time.Hour), LastSeen: now}
+			s.sessions[t] = session{ID: "projection", Role: "projector", ProjectionControl: true, Expires: now.Add(8 * time.Hour), LastSeen: now}
 			respond(w, 200, map[string]string{"token": t})
 		default:
 			fail(w, 404, "接口不存在")
@@ -584,13 +576,27 @@ func (s *Server) action(w http.ResponseWriter, ss session, a Action) {
 	if a.OnlineOnly {
 		a.Learners = s.online()
 	}
-	if !slices.Contains([]string{"page-grants", "page-close", "modules-open", "modules-close", "project", "pause"}, a.Kind) {
+	if !slices.Contains([]string{"page-grants", "pages-activate", "page-close", "modules-open", "modules-close", "project", "pause"}, a.Kind) {
 		fail(w, 400, "未知操作")
 		return
 	}
 	if slices.Contains([]string{"page-grants", "page-close", "project"}, a.Kind) && !slices.ContainsFunc(s.state.Slides, func(p Slide) bool { return p.ID == a.Page }) {
 		fail(w, 400, "页面不存在")
 		return
+	}
+	if a.Kind == "pages-activate" {
+		if len(a.Pages) == 0 || len(a.Pages) > len(s.state.Slides) || len(a.Learners) == 0 {
+			fail(w, 400, "请选择页面和学员")
+			return
+		}
+		seenPages := map[string]bool{}
+		for _, id := range a.Pages {
+			if seenPages[id] || !slices.ContainsFunc(s.state.Slides, func(p Slide) bool { return p.ID == id }) {
+				fail(w, 400, "页面名单无效")
+				return
+			}
+			seenPages[id] = true
+		}
 	}
 	seen := map[string]bool{}
 	for _, id := range a.Learners {
@@ -621,6 +627,15 @@ func (s *Server) action(w http.ResponseWriter, ss session, a Action) {
 		l := &next.Learners[i]
 		selected := slices.Contains(a.Learners, l.ID)
 		switch a.Kind {
+		case "pages-activate":
+			if selected {
+				for _, page := range a.Pages {
+					if !slices.Contains(l.Pages, page) {
+						l.Pages = append(l.Pages, page)
+					}
+				}
+				l.Current = a.Pages[0]
+			}
 		case "page-grants":
 			if selected {
 				if !slices.Contains(l.Pages, a.Page) {
@@ -651,6 +666,9 @@ func (s *Server) action(w http.ResponseWriter, ss session, a Action) {
 			}
 		}
 	}
+	if a.Kind == "pages-activate" {
+		next.Closed = slices.DeleteFunc(next.Closed, func(p string) bool { return slices.Contains(a.Pages, p) })
+	}
 	if a.Kind == "page-grants" || a.Kind == "page-close" {
 		next.Closed = slices.DeleteFunc(next.Closed, func(p string) bool { return p == a.Page })
 		if a.Kind == "page-close" || len(a.Learners) == 0 {
@@ -673,5 +691,9 @@ func (s *Server) action(w http.ResponseWriter, ss session, a Action) {
 		return
 	}
 	s.state = next
+	if ss.Role == "projector" {
+		respond(w, 200, map[string]any{"ok": true, "revision": next.Revision})
+		return
+	}
 	s.classroom(w)
 }

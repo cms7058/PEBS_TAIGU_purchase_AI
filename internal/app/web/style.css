@@ -2666,3 +2666,121 @@ legend {
     text-align: left;
   }
 }
+
+/* Keep the lesson navigation independent from the teaching controls. */
+.admin-classroom-layout {
+  grid-template-columns: 260px minmax(0, 1fr);
+  align-items: start;
+}
+.admin-slide-browser {
+  position: sticky;
+  top: 12px;
+  min-width: 0;
+}
+.admin-slide-tools {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.admin-slide-tools .toolbar {
+  margin-bottom: 12px;
+}
+.admin-slide-tools strong, .admin-page-position {
+  font-size: 12px;
+}
+.admin-slide-tools button {
+  padding: 7px 9px;
+  font-size: 12px;
+}
+#admin-page-jump label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 7px;
+}
+#admin-page-number {
+  min-width: 0;
+  width: 110px;
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px;
+}
+#admin-page-error {
+  color: #a13b3b;
+  font-size: 12px;
+}
+.admin-slide-tools .admin-page-position {
+  margin: 10px 0 0;
+  gap: 5px;
+}
+.admin-slide-browser .slide-list {
+  max-height: calc(100dvh - 235px);
+  min-height: 120px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding-right: 4px;
+}
+.admin-teaching-console {
+  position: sticky;
+  top: 12px;
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  min-width: 0;
+}
+.admin-teaching-console .slide-image img {
+  max-height: max(180px, calc(100dvh - 390px));
+}
+.admin-teaching-console .panel {
+  padding: 14px;
+  margin-top: 10px;
+}
+.admin-teaching-console .toolbar {
+  margin-bottom: 10px;
+}
+.admin-teaching-console .columns {
+  gap: 12px;
+}
+@media (max-width: 700px) {
+  .admin-classroom-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .admin-slide-browser {
+    position: static;
+  }
+  .admin-slide-browser, .admin-teaching-console {
+    width: 100%;
+  }
+  .admin-slide-browser .slide-list {
+    max-height: 220px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin-teaching-console {
+    flex-shrink: 0;
+  }
+}
+.admin-page-choice { position: relative; }
+.admin-page-check { position: absolute; top: 10px; right: 8px; padding: 4px; cursor: pointer; }
+.admin-page-choice .thumb { padding-right: 36px; }
+.admin-page-choice .thumb.selected { padding-right: 35px; }
+#admin-page-range label { font-size: 13px; display: block; margin: 12px 0 7px; }
+#admin-range { min-width: 0; width: 100%; flex: 1; padding: 8px; border: 1px solid var(--line); border-radius: 6px; }
+#admin-range-error { color: #a13b3b; font-size: 12px; }
+.batch-page-actions { margin-top: 10px; }
+.admin-slide-browser .slide-list { max-height: calc(100dvh - 365px); }
+.projector-controls { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; padding: 10px; background: #eef6fc; color: #25455e; }
+.projector-controls a { color: #315d7c; text-decoration: none; padding: 8px; }
+.projector-controls button { padding: 7px 12px; }
+.projection-mode .projector { min-height: calc(100dvh - 66px); }
+.projection-mode .projector .slide-image img { max-height: calc(100dvh - 66px); }
+.projection-mode .projector .slide { max-height: calc(100dvh - 66px); }
+@media (max-width: 700px) {
+ .admin-slide-browser .slide-list { max-height: 220px; }
+ .projector-controls { gap: 5px; font-size: 12px; }
+ .projector-controls button { padding: 6px; font-size: 12px; }
+}

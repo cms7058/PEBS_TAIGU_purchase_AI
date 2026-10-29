@@ -24,7 +24,7 @@ PBKDF2-SHA256密码哈希、随机初始密码、改密；HttpOnly/SameSite cook
 
 学员接口不返回Score、标准答案或评分参考。作业校验本人和模块授权。考试期间暂停新的实训请求和AI提示。报告及评分接口验证管理员。
 
-页授权完整名单替换，关闭涵盖离线学员，图片接口同样检查。投影为独立只读令牌，仅能访问当前投影页；图片以带令牌请求获取blob，不将令牌放入图片URL。
+页授权完整名单替换，关闭涵盖离线学员，图片接口同样检查。投影使用独立令牌，仅能读取当前投影页；管理员创建的播放窗口另有受限翻页权限，只能切换相邻页，不能管理账号、学员或课件授权。旧只读令牌不自动获得控制权限。图片以带令牌请求获取blob，不将令牌放入图片URL。
 
 ## 接口
 
@@ -34,7 +34,7 @@ PBKDF2-SHA256密码哈希、随机初始密码、改密；HttpOnly/SameSite cook
 | /api/admin/learners | 学员列表、新增、资料编辑、启停、单个/批量重置密码 |
 | /api/me | 本人开放页面和模块 |
 | /api/admin/classroom、/api/admin/actions | 课堂状态、页授权/关闭、实训开放/结束、投影 |
-| /api/admin/projection-token、/api/projection | 只读投影凭证及当前画面 |
+| /api/admin/projection-token、/api/projection | 独立投影凭证、当前画面及受限翻页 |
 | /api/slide-images/{page} | 受权限保护的页面图片 |
 | /api/admin/courseware | 页面包/PPTX/PDF导入 |
 | /api/training/{module}、/{module}/template | 案例与CSV模板 |

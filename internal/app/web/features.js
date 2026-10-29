@@ -115,7 +115,7 @@ window.Features = (() => {
       if (view === "password")
         shell(
           titles[view],
-          `<form id="password-form" class="panel form-stack"><label>当前密码<input type="password" name="current" autocomplete="current-password" required></label><label>新密码（至少${user.role === "learner" ? 6 : 16}字符）<input type="password" name="next" autocomplete="new-password" minlength="${user.role === "learner" ? 6 : 16}" maxlength="200" required></label><button class="primary">修改并重新登录</button></form>`,
+          `<form id="password-form" class="panel form-stack"><label>当前密码<input type="password" name="current" autocomplete="current-password" required></label><label>新密码（至少6字符）<input type="password" name="next" autocomplete="new-password" minlength="6" maxlength="200" required></label><button class="primary">修改并重新登录</button></form>`,
         );
     } catch (err) {
       message(err.message, true);

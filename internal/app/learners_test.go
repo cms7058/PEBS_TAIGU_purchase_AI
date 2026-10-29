@@ -38,7 +38,7 @@ func TestLearnerManagementPasswordsAndPersistence(t *testing.T) {
 	mustStatus(t, request(s, "GET", "/api/me", "TG01", nil), 200)
 	mustStatus(t, manageLearners(s, "reset-passwords", map[string]any{"ids": []string{"TG01"}, "password": "short"}), 422)
 	mustStatus(t, manageLearners(s, "reset-passwords", map[string]any{"ids": []string{"TG01"}, "password": "中文三"}), 422)
-	mustStatus(t, request(s, "POST", "/api/password", "admin-test", map[string]string{"current": cfg.AdminPassword, "next": "123456"}), 422)
+	mustStatus(t, request(s, "POST", "/api/password", "admin-test", map[string]string{"current": cfg.AdminPassword, "next": "12345"}), 422)
 	password := "123456"
 	mustStatus(t, manageLearners(s, "reset-passwords", map[string]any{"ids": []string{"TG01", "TG02"}, "password": password}), 422)
 	w := manageLearners(s, "reset-passwords", map[string]any{"ids": []string{"TG01"}, "password": password})
